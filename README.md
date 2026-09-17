@@ -13,19 +13,21 @@ Built with **PlatformIO + Arduino** (C++).
 
 ### Wiring (I2C)
 
-The BMP280 is connected over I2C. Default ESP32 I2C pins are used.
+The BMP280 is connected over I2C. Default ESP32 I2C pins are used. This
+project targets the common 4-pin (I2C-only) breakout with pins VDC, GND, SCL
+and SDA.
 
-| BMP280 pin | ESP32-WROOM-32 pin | Notes                          |
-| ---------- | ------------------ | ------------------------------ |
-| VCC        | 3V3                | 3.3 V, do not use 5 V          |
-| GND        | GND                |                                |
-| SCL        | GPIO22             | I2C clock                      |
-| SDA        | GPIO21             | I2C data                       |
-| CSB        | (leave unconnected)| Pulled high = I2C mode         |
-| SDO        | GND or 3V3         | Sets address: GND = 0x76, 3V3 = 0x77 |
+| BMP280 pin | ESP32-WROOM-32 pin | Notes            |
+| ---------- | ------------------ | ---------------- |
+| VDC (VCC)  | 3V3                | 3.3 V power      |
+| GND        | GND                |                  |
+| SCL        | GPIO22             | I2C clock        |
+| SDA        | GPIO21             | I2C data         |
 
-Most GY-BMP280 breakout boards default to address **0x76**. If the sensor is
-not detected, change `BMP280_I2C_ADDRESS` to `0x77` in `include/config.h`.
+On a 4-pin board the I2C address is fixed on the board (there is no SDO pin to
+change it). It is usually **0x76**, which is the default in `include/config.h`.
+If the sensor is not detected, set `BMP280_I2C_ADDRESS` to `0x77`. To find the
+actual address, run an I2C scanner sketch and use whatever address responds.
 
 ## Software setup
 
