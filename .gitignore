@@ -1,0 +1,14 @@
+# PlatformIO build artifacts
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# Real credentials must never be committed. Only the template is tracked.
+include/credentials.h
+
+# Python virtual environment
+.venv/
+
+# Editor / OS
+.vscode/
+.DS_Store
