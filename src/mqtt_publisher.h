@@ -1,5 +1,5 @@
 #pragma once
-#include "sensor.h"
+#include "bmp280_sensor.h"
 
 // Configure the MQTT client with the broker from credentials.h.
 void mqttInit();
