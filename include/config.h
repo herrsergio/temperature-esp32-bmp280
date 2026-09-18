@@ -10,7 +10,7 @@
 // Most GY-BMP280 breakout boards use address 0x76; some use 0x77.
 #define I2C_SDA_PIN 21
 #define I2C_SCL_PIN 22
-#define BMP280_I2C_ADDRESS 0x76
+#define BMP280_I2C_ADDRESS 0x77
 
 // Reference sea-level pressure in hPa, used to derive altitude.
 // Adjust to your local QNH for an accurate altitude value.
