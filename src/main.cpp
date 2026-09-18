@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 #include "config.h"
-#include "sensor.h"
+#include "bmp280_sensor.h"
 #include "wifi_setup.h"
 #include "mqtt_publisher.h"
 #include "web_server.h"
