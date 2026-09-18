@@ -4,7 +4,7 @@ Read temperature, pressure and derived altitude from a **BMP280** sensor on an
 **ESP32-WROOM-32** (ESP32-D0WD-V3, dual core, 4MB flash). Readings are:
 
 - printed to the **serial** monitor,
-- published as **JSON to an MQTT** broker, and
+- published as **JSON over TLS to an MQTT broker** (e.g. HiveMQ Cloud), and
 - served from an on-board **HTTP web server** (a live page plus a `/json` endpoint).
 
 Built with **PlatformIO + Arduino** (C++).
@@ -59,6 +59,27 @@ cp include/credentials.h.example include/credentials.h
 I2C address, MQTT topic, sea-level reference pressure) live in
 `include/config.h`.
 
+#### HiveMQ Cloud
+
+The firmware connects over **TLS on port 8883**, which HiveMQ Cloud's free
+Serverless tier requires. In the HiveMQ Cloud console:
+
+1. Open your cluster and copy the host from **Overview > Connection Settings**
+   (it looks like `xxxxxxxx.s1.eu.hivemq.cloud`).
+2. Create a device username/password under **Access Management**.
+3. Fill those into `include/credentials.h`:
+   ```cpp
+   #define MQTT_HOST     "xxxxxxxx.s1.eu.hivemq.cloud"
+   #define MQTT_PORT     8883
+   #define MQTT_USER     "your-hivemq-username"
+   #define MQTT_PASSWORD "your-hivemq-password"
+   ```
+
+Security note: the firmware calls `WiFiClientSecure::setInsecure()`, so traffic
+is encrypted but the broker certificate is not verified. For full verification,
+set the root CA via `setCACert()` and add NTP time sync in
+`src/mqtt_publisher.cpp`.
+
 ## Build, flash, monitor
 
 ```bash
@@ -91,8 +112,17 @@ Once flashed and powered, the ESP32:
 
 ### Check MQTT from a PC
 
+The easiest verification is the **Web Client** in the HiveMQ Cloud console, or a
+GUI like **MQTT Explorer** (both handle TLS with a checkbox). Subscribe to
+`esp32/bmp280`; because messages are published retained, you get the last value
+immediately.
+
+With the `mosquitto_sub` CLI, TLS on 8883 needs a CA file (path is OS-dependent):
+
 ```bash
-mosquitto_sub -h <broker-host> -t 'esp32/bmp280'
+mosquitto_sub -h xxxxxxxx.s1.eu.hivemq.cloud -p 8883 \
+  -u 'your-hivemq-username' -P 'your-hivemq-password' \
+  -t 'esp32/bmp280' --cafile /etc/ssl/certs/ca-certificates.crt -v
 ```
 
 ## Project layout
@@ -105,7 +135,7 @@ include/
   credentials.h           Real secrets (gitignored)
 src/
   main.cpp                Orchestration: setup + timed loop
-  sensor.{h,cpp}          BMP280 read into a SensorReading struct
+  bmp280_sensor.{h,cpp}   BMP280 read into a SensorReading struct
   wifi_setup.{h,cpp}      WiFi connection
   mqtt_publisher.{h,cpp}  MQTT connect + JSON publish
   web_server.{h,cpp}      HTTP server: "/" page and "/json"
@@ -120,5 +150,6 @@ src/
 
 ## Out of scope
 
-Deep sleep / low power, OTA updates, TLS (MQTTS), multiple sensors, and
-historical storage are intentionally not included.
+Deep sleep / low power, OTA updates, full MQTT broker certificate verification
+(the firmware encrypts but does not validate the server cert), multiple sensors,
+and historical storage are intentionally not included.
