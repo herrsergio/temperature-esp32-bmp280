@@ -1,17 +1,22 @@
 #include "mqtt_publisher.h"
 
-#include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 
 #include "config.h"
 #include "credentials.h"
 
-static WiFiClient wifiClient;
+static WiFiClientSecure wifiClient;
 static PubSubClient mqttClient(wifiClient);
 static unsigned long lastReconnectAttempt = 0;
 
 void mqttInit() {
+  // TLS transport for HiveMQ Cloud (port 8883). setInsecure() encrypts the
+  // connection but does NOT verify the broker certificate. To enable full
+  // verification later, replace this with wifiClient.setCACert(rootCA) and
+  // add NTP time sync so the certificate validity dates can be checked.
+  wifiClient.setInsecure();
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
 }
 
