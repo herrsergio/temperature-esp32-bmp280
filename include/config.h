@@ -14,7 +14,7 @@
 
 // Reference sea-level pressure in hPa, used to derive altitude.
 // Adjust to your local QNH for an accurate altitude value.
-#define SEALEVEL_HPA 1013.25f
+#define SEALEVEL_HPA 1031.8f
 
 // How often to read the sensor, print, publish and refresh the web cache (ms).
 #define READING_INTERVAL_MS 10000UL
