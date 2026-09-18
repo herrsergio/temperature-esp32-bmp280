@@ -1,5 +1,5 @@
 #pragma once
-#include "sensor.h"
+#include "bmp280_sensor.h"
 
 // Register routes and start the HTTP server on WEB_SERVER_PORT.
 void webServerInit();
